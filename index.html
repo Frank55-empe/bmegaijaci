@@ -128,58 +128,6 @@
     const loading = document.getElementById("loading");
     const confirmacao = document.getElementById("confirmacao");
     const btnVoltar = document.getElementById("btn-voltar");
-btnVoltar.addEventListener("click", async () => {
-  const dados = {
-    Nome: document.getElementById("confNome").textContent,
-    NomePlanilha: document.getElementById("confPlanilha").textContent,
-    WhatsApp: document.getElementById("confWhats").textContent,
-    Cidade: document.getElementById("confCidade").textContent,
-    Dezenas: document.getElementById("confDezenas").textContent
-  };
-
-  const formData = new URLSearchParams();
-  for (const chave in dados) {
-    formData.append(chave, dados[chave]);
-  }
-
-  loading.style.display = "block";
-  try {
-    const response = await fetch("https://script.google.com/macros/s/AKfycbyq7XFx-QV3MBkcTaU_J8IcJ1gaDa3QjW451CFA4uJcdof83FKNkqJVWekQLQGy_Qu07A/exec", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: formData.toString()
-    });
-
-    if (response.ok) {
-      confirmacao.style.display = "none";
-
-      const mensagem = document.createElement("div");
-      mensagem.innerHTML = `
-        <h2>Obrigado por participar!</h2>
-        <p>Sua inscrição foi recebida com sucesso. Desejamos-lhe boa sorte!</p>
-        <p>Para confirmar sua participação, por favor, realize o pagamento de <strong>R$35,00</strong> via Pix utilizando a chave abaixo:</p>
-        <p><strong>Chave Pix:</strong> 35991717912 (Frank de Souza Borges)</p>
-        <p>Após o pagamento, sua participação estará garantida. Boa sorte!</p>
-      `;
-      mensagem.style.textAlign = "center";
-      mensagem.style.background = "#000000aa";
-      mensagem.style.padding = "20px";
-      mensagem.style.borderRadius = "15px";
-      mensagem.style.marginTop = "20px";
-      mensagem.style.maxWidth = "400px";
-      mensagem.style.margin = "20px auto";
-      document.body.appendChild(mensagem);
-    } else {
-      alert("Erro ao enviar os dados. Tente novamente.");
-    }
-  } catch (error) {
-    alert("Erro ao enviar os dados. Tente novamente.");
-  } finally {
-    loading.style.display = "none";
-  }
-});
 
     let dezenasSelecionadas = [];
 
@@ -257,3 +205,4 @@ btnVoltar.addEventListener("click", async () => {
   </script>
 </body>
 </html>
+
