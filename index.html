@@ -94,8 +94,8 @@
     <label for="nome">Nome completo:</label>
     <input type="text" id="nome" required />
 
-    <label for="nomePlanilha">Nome para Planilha:</label>
-    <input type="text" id="nomePlanilha" required />
+    <label for="nomeJogo">Nome no Jogo:</label>
+    <input type="text" id="nomeJogo" required />
 
     <label for="whatsapp">WhatsApp:</label>
     <input type="text" id="whatsapp" required />
@@ -114,7 +114,7 @@
   <div id="confirmacao">
     <h2>Confira seus dados:</h2>
     <p><strong>Nome:</strong> <span id="confNome"></span></p>
-    <p><strong>Nome para Planilha:</strong> <span id="confPlanilha"></span></p>
+    <p><strong>Nome no Jogo:</strong> <span id="confPlanilha"></span></p>
     <p><strong>WhatsApp:</strong> <span id="confWhats"></span></p>
     <p><strong>Cidade:</strong> <span id="confCidade"></span></p>
     <p><strong>Dezenas:</strong> <span id="confDezenas"></span></p>
@@ -159,7 +159,7 @@
       }
 
       document.getElementById("confNome").textContent = document.getElementById("nome").value;
-      document.getElementById("confPlanilha").textContent = document.getElementById("nomePlanilha").value;
+      document.getElementById("confPlanilha").textContent = document.getElementById("nomeJogo").value;
       document.getElementById("confWhats").textContent = document.getElementById("whatsapp").value;
       document.getElementById("confCidade").textContent = document.getElementById("cidade").value;
       document.getElementById("confDezenas").textContent = dezenasSelecionadas.map(d => d.toString().padStart(2, "0")).join(", ");
