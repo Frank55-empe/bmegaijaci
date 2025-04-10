@@ -1,99 +1,194 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Bolão da Sorte</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jogada da Sorte</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: Arial; text-align: center; margin-top: 50px; }
-    .container { max-width: 500px; margin: auto; }
-    .form-group { margin: 15px 0; }
-    input[type="text"], input[type="tel"] {
-      width: 100%; padding: 10px; font-size: 16px;
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
-    .dezenas { display: flex; flex-wrap: wrap; justify-content: center; }
-    .dezenas label { margin: 5px; }
-    #contador { margin-top: 10px; }
+    .animate-pulse-soft {
+      animation: pulse 1s ease-in-out infinite;
+    }
+    @keyframes piscar {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .piscar {
+      animation: piscar 0.8s infinite;
+    }
   </style>
 </head>
-<body>
-  <div class="container">
-    <h2>Bolão da Sorte</h2>
-    <div id="formularioContainer">
-      <div class="form-group">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" required>
-      </div>
-      <div class="form-group">
-        <label for="nomeJogo">Nome do Jogo:</label>
-        <input type="text" id="nomeJogo" name="nomeJogo">
-      </div>
-      <div class="form-group">
-        <label for="whatsapp">WhatsApp:</label>
-        <input type="tel" id="whatsapp" name="whatsapp">
-      </div>
-      <div class="form-group">
-        <label for="cidade">Cidade:</label>
-        <input type="text" id="cidade" name="cidade">
-      </div>
-      <div class="form-group dezenas" id="dezenasContainer">
-        <!-- Dezenas de 01 a 25 -->
-        <script>
-          for (let i = 1; i <= 25; i++) {
-            const num = i.toString().padStart(2, '0');
-            document.write(`<label><input type="checkbox" name="dezenas" value="${num}">${num}</label>`);
-          }
-        </script>
-      </div>
-      <div id="contador">0 dezenas selecionadas</div>
-      <button onclick="enviarFormulario()">Enviar</button>
-    </div>
-    <div id="agradecimento" style="display:none;">
-      <h3>Obrigado por participar!</h3>
+<body class="bg-gradient-to-tr from-blue-600 to-blue-900 min-h-screen flex items-center justify-center p-4">
+
+  <!-- Formulário -->
+  <div class="bg-white rounded-3xl shadow-xl p-8 w-full max-w-lg animate-fade-in" id="formularioContainer">
+    <h1 class="text-3xl font-bold text-center text-blue-700 mb-2">🔥 Participe da Jogada da Sorte!</h1>
+    <p class="text-center text-gray-600 mb-6">Preencha seus dados e entre no jogo. É rápido, seguro e cheio de prêmios!</p>
+
+    <form id="formulario" class="space-y-4">
+      <input id="nome" type="text" name="nome" placeholder="Seu nome completo" required class="w-full px-4 py-3 border border-gray-300 rounded-xl" />
+      <input id="nomeJogo" type="text" name="nomeJogo" placeholder="Nome no jogo" required class="w-full px-4 py-3 border border-gray-300 rounded-xl" />
+      <input id="whatsapp" type="text" name="whatsapp" placeholder="Seu WhatsApp" required class="w-full px-4 py-3 border border-gray-300 rounded-xl" />
+      <input id="cidade" type="text" name="cidade" placeholder="Sua cidade" required class="w-full px-4 py-3 border border-gray-300 rounded-xl" />
+
+      <label class="block font-semibold mt-4">Escolha <strong>exatamente 10 dezenas</strong>:</label>
+      <div id="tabela-dezenas" class="grid grid-cols-6 gap-2 text-sm mb-2"></div>
+      <p id="contadorDezenas" class="text-sm text-gray-600 text-right">Selecionadas: 0/10</p>
+      <p id="limiteMensagem" class="text-center text-red-600 font-medium hidden animate-pulse-soft">⚠️ Você já escolheu 10 dezenas!</p>
+
+      <button type="submit" class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition duration-300">
+        🚀 Enviar e Participar
+      </button>
+    </form>
+
+    <div id="mensagem" class="mt-4 text-center font-semibold"></div>
+  </div>
+  <!-- Tela de agradecimento -->
+  <div id="agradecimento" style="display:none;" class="bg-white rounded-3xl shadow-xl p-8 w-full max-w-lg text-center">
+    <h2 class="text-2xl font-bold text-blue-700 mb-4">🎉 Obrigado pelo seu cadastro!</h2>
+    <p class="mb-2">Pix para pagamento:</p>
+    <p class="font-semibold">📱 Chave Pix: 35991717912</p>
+    <p class="font-semibold">🙍‍♂️ Nome: Frank de Souza Borges</p>
+    <p class="mt-4 text-green-600 font-bold">Boa sorte no jogo! 🍀</p>
+
+    <div class="mt-6 space-y-2">
+      <button onclick="novoCadastro()" class="w-full py-2 bg-blue-600 text-white font-bold rounded hover:bg-blue-700">🔁 Fazer Novo Cadastro</button>
+      <button onclick="sairComMensagem()" class="w-full py-2 bg-gray-400 text-white font-bold rounded hover:bg-gray-600">🚪 Sair do Aplicativo</button>
     </div>
   </div>
-  <script>
-    document.getElementById("nome").addEventListener("blur", async () => {
-      const nome = document.getElementById("nome").value.trim();
-      if (!nome) return;
-      const resposta = await fetch("URL_DO_SEU_DEPLOY", {
-        method: "POST",
-        body: JSON.stringify({ acao: "verificar", nome }),
-        headers: { "Content-Type": "application/json" }
-      });
-      const dados = await resposta.json();
-      if (dados.encontrado) preencherFormulario(dados);
-    });
 
-    function preencherFormulario(dados) {
-      document.getElementById("nome").value = dados.nome;
-      document.getElementById("nomeJogo").value = dados.nomeJogo;
-      document.getElementById("whatsapp").value = dados.whatsapp;
-      document.getElementById("cidade").value = dados.cidade;
-      const checkboxes = document.querySelectorAll('input[name="dezenas"]');
-      checkboxes.forEach(cb => cb.checked = false);
-      dados.dezenas.forEach(num => {
-        const checkbox = Array.from(checkboxes).find(cb => cb.value === num);
-        if (checkbox) checkbox.checked = true;
-      });
-      atualizarContador();
-      const manter = confirm(`Cadastro encontrado para ${dados.nome}. Deseja manter os dados?`);
-      if (manter) {
-        document.getElementById("formularioContainer").style.display = "none";
-        document.getElementById("agradecimento").style.display = "block";
+  <!-- Tela de saída -->
+  <div id="telaSaida" style="display:none;" class="fixed inset-0 bg-blue-900 text-white flex items-center justify-center text-4xl font-extrabold piscar text-center p-4">
+    Até breve! Boa sorte! 🍀
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    function gerarTabelaDezenas() {
+      const container = document.getElementById("tabela-dezenas");
+      container.innerHTML = ""; // limpa ao reiniciar
+      for (let i = 1; i <= 60; i++) {
+        const numero = String(i).padStart(2, '0');
+
+        const label = document.createElement("label");
+        label.className = "cursor-pointer block text-center py-2 rounded border border-gray-300 transition hover:bg-blue-100 peer-checked:bg-blue-600 peer-checked:text-white";
+
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.value = numero;
+        input.name = "dezenas";
+        input.className = "hidden peer";
+        input.addEventListener("change", atualizarContador);
+
+        const span = document.createElement("span");
+        span.textContent = numero;
+        span.className = "block peer-checked:bg-blue-600 peer-checked:text-white py-2 rounded";
+
+        label.appendChild(input);
+        label.appendChild(span);
+
+        container.appendChild(label);
       }
     }
 
     function atualizarContador() {
-      const selecionadas = document.querySelectorAll('input[name="dezenas"]:checked').length;
-      document.getElementById("contador").textContent = `${selecionadas} dezenas selecionadas`;
-    }
-    document.querySelectorAll('input[name="dezenas"]').forEach(cb => {
-      cb.addEventListener("change", atualizarContador);
-    });
+      const checkboxes = document.querySelectorAll('input[name="dezenas"]');
+      const selecionados = Array.from(checkboxes).filter(c => c.checked);
 
-    function enviarFormulario() {
-      alert("Envio simulado. Aqui você ligaria ao Apps Script para gravar.");
+      document.getElementById("contadorDezenas").textContent = `Selecionadas: ${selecionados.length}/10`;
+
+      checkboxes.forEach(cb => {
+        cb.disabled = selecionados.length >= 10 && !cb.checked;
+      });
+
+      const aviso = document.getElementById("limiteMensagem");
+      aviso.classList.toggle("hidden", selecionados.length < 10);
     }
+
+    function novoCadastro() {
+      document.getElementById("formularioContainer").style.display = "block";
+      document.getElementById("agradecimento").style.display = "none";
+      document.getElementById("telaSaida").style.display = "none";
+      document.getElementById("formulario").reset();
+      gerarTabelaDezenas();
+      atualizarContador();
+      document.getElementById("mensagem").textContent = "";
+    }
+
+    function sairComMensagem() {
+      document.getElementById("formularioContainer").style.display = "none";
+      document.getElementById("agradecimento").style.display = "none";
+      document.getElementById("telaSaida").style.display = "flex";
+      setTimeout(() => {
+        window.location.href = "https://www.google.com";
+      }, 3000);
+    }
+
+    gerarTabelaDezenas();
+
+    const form = document.getElementById("formulario");
+    const mensagem = document.getElementById("mensagem");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      mensagem.textContent = "Enviando... ⏳";
+      mensagem.className = "mt-4 text-center font-semibold";
+
+      const formData = new FormData(form);
+      const dezenasSelecionadas = Array.from(document.querySelectorAll('input[name="dezenas"]:checked')).map(el => el.value);
+
+      if (dezenasSelecionadas.length !== 10) {
+        mensagem.textContent = "Você precisa selecionar exatamente 10 dezenas!";
+        mensagem.classList.add("text-red-600");
+        return;
+      }
+
+      const dados = new URLSearchParams();
+      dados.append("Nome", formData.get("nome"));
+      dados.append("NomeJogo", formData.get("nomeJogo"));
+      dados.append("WhatsApp", formData.get("whatsapp"));
+      dados.append("Cidade", formData.get("cidade"));
+      dados.append("Dezenas", dezenasSelecionadas.join(", "));
+
+      try {
+        const res = await fetch("https://script.google.com/macros/s/AKfycbw4fzcCXpxMwLJF19SW1PHfn7TTCWkhIhEW6pLaYOXKkJ81WaGYtSUqtG78trAvRcPVCg/exec", {
+          method: 'POST',
+          body: dados
+        });
+
+        await res.text();
+        mensagem.textContent = "";
+        document.getElementById("formularioContainer").style.display = "none";
+        document.getElementById("agradecimento").style.display = "block";
+      } catch (error) {
+        mensagem.textContent = "Erro ao enviar. Tente novamente!";
+        mensagem.classList.add("text-red-600");
+        console.error("Erro:", error);
+      }
+    });
+// Máscara para o campo WhatsApp
+const campoWhatsApp = document.getElementById("whatsapp");
+
+campoWhatsApp.addEventListener("input", function(e) {
+  let valor = e.target.value.replace(/\D/g, ""); // remove tudo que não é número
+
+  if (valor.length > 11) valor = valor.slice(0, 11); // máximo 11 dígitos
+
+  // Aplica a máscara
+  if (valor.length >= 2 && valor.length <= 6) {
+    valor = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
+  } else if (valor.length > 6 && valor.length <= 10) {
+    valor = `(${valor.slice(0, 2)}) ${valor.slice(2, 6)}-${valor.slice(6)}`;
+  } else if (valor.length === 11) {
+    valor = `(${valor.slice(0, 2)}) ${valor.slice(2, 3)} ${valor.slice(3, 7)}-${valor.slice(7)}`;
+  }
+
+  e.target.value = valor;
+});
   </script>
 </body>
 </html>
